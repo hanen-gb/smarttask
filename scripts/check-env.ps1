@@ -53,9 +53,11 @@ Write-Head "Backend (Java / Spring Boot)"
 
 $java = Get-Command java -ErrorAction SilentlyContinue
 if ($java) {
-    $raw = (& java -version 2>&1) -join ' '
-    $m = [regex]::Match($raw, '"(\d+)\.')
-    if (-not $m.Success) { $m = [regex]::Match($raw, 'version "?(\d+)') }
+    # Attention : "java -version" ecrit sur stderr (contrairement a "javac -version").
+    # On passe par cmd.exe pour fusionner stderr dans stdout, sinon la sortie est
+    # perdue a cause de $ErrorActionPreference = 'SilentlyContinue'.
+    $raw = (cmd /c "java -version 2>&1") -join ' '
+    $m = [regex]::Match($raw, 'version "?(\d+)')
     $major = 0
     if ($m.Success) { $major = [int]$m.Groups[1].Value }
 
@@ -89,12 +91,8 @@ $root = Split-Path -Parent $PSScriptRoot
 if (Test-Path (Join-Path $root 'backend\mvnw.cmd')) {
     Pass "Maven Wrapper" "backend\mvnw.cmd present"
 } else {
-    $mvn = Get-Command mvn -ErrorAction SilentlyContinue
-    if ($mvn) {
-        Warn "Maven Wrapper" "absent, mais Maven global est installe" "Normal avant l'etape 2 : le wrapper sera genere avec le projet backend"
-    } else {
-        Warn "Maven Wrapper" "absent (normal avant l'etape 2)" "Rien a faire : mvnw sera genere par Spring Initializr a l'etape 2"
-    }
+    # Pas d'action a proposer : mvnw sera genere avec le projet backend (etape 2).
+    Warn "Maven Wrapper" "absent -- normal avant l'etape 2" $null
 }
 
 # --- 2. Frontend -------------------------------------------------------------

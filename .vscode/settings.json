@@ -1,0 +1,39 @@
+{
+  // Réglages partagés du projet SmartTask (versionnés dans git).
+
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "editor.formatOnSave": true,
+  "editor.rulers": [120],
+
+  // ── Java / Spring Boot ────────────────────────────────────────────────
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "java.format.settings.profile": "GoogleStyle",
+  "[java]": {
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "redhat.java"
+  },
+
+  // ── TypeScript / Angular ──────────────────────────────────────────────
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "[typescript]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[html]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[scss]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[json]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+  "[jsonc]": { "editor.defaultFormatter": "esbenp.prettier-vscode" },
+
+  // ── Confort ───────────────────────────────────────────────────────────
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/.angular": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/target": true,
+    "**/dist": true
+  },
+  "terminal.integrated.defaultProfile.windows": "PowerShell"
+}

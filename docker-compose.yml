@@ -1,0 +1,83 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  SmartTask — services d'infrastructure pour le DÉVELOPPEMENT
+#
+#  Contient uniquement la base de données et son interface d'administration.
+#  Le backend et le frontend sont lancés à la main pendant le développement
+#  (pour profiter du rechargement à chaud). La stack complète conteneurisée
+#  arrive à l'étape 13 dans docker-compose.prod.yml.
+#
+#  Usage :
+#    docker compose up -d        démarrer
+#    docker compose ps           état des conteneurs
+#    docker compose logs -f      suivre les logs
+#    docker compose stop         arrêter (données conservées)
+#    docker compose down -v      TOUT supprimer, données incluses
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: smarttask-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: smarttask
+      POSTGRES_USER: smarttask
+      POSTGRES_PASSWORD: smarttask
+      # Évite les problèmes de tri/encodage sur une base créée depuis Windows
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+    ports:
+      # 5433 côté PC  ->  5432 dans le conteneur
+      # Le port 5432 est déjà pris par le PostgreSQL installé sur Windows.
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # Permet au backend (étape 13) d'attendre que la base soit vraiment prête
+      test: ["CMD-SHELL", "pg_isready -U smarttask -d smarttask"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - smarttask-net
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: smarttask-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@smarttask.local
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"          # pas de login multi-utilisateur
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - smarttask-net
+
+volumes:
+  postgres-data:
+    name: smarttask-postgres-data
+  pgadmin-data:
+    name: smarttask-pgadmin-data
+
+networks:
+  smarttask-net:
+    name: smarttask-network
+    driver: bridge
+
+# ─────────────────────────────────────────────────────────────────────────────
+#  Se connecter à la base
+#
+#  Depuis ton PC (psql, DBeaver, IntelliJ, le backend lancé en local) :
+#      host=localhost  port=5433  db=smarttask  user=smarttask  password=smarttask
+#      jdbc:postgresql://localhost:5433/smarttask
+#
+#  Depuis pgAdmin (qui tourne DANS Docker, il voit le réseau interne) :
+#      host=postgres   port=5432
+# ─────────────────────────────────────────────────────────────────────────────

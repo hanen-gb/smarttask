@@ -1,0 +1,39 @@
+# Harmonise l'indentation et les fins de ligne entre tous les éditeurs.
+# Supporté nativement par IntelliJ ; VS Code nécessite l'extension EditorConfig.
+# Objectif : éviter les diffs git pollués par des changements de formatage.
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+max_line_length = 120
+
+# Java : 4 espaces, convention de la plateforme
+[*.java]
+indent_size = 4
+
+[*.{ts,js,html,scss,css,json,yml,yaml}]
+indent_size = 2
+
+[*.xml]
+indent_size = 2
+
+[*.sql]
+indent_size = 2
+
+[*.md]
+# Deux espaces en fin de ligne = retour à la ligne en Markdown : à préserver
+trim_trailing_whitespace = false
+
+# Les scripts Windows exigent des fins de ligne CRLF
+[*.{cmd,bat,ps1}]
+end_of_line = crlf
+
+# Fichier généré par Maven : ne pas y toucher
+[.mvn/wrapper/maven-wrapper.properties]
+insert_final_newline = false

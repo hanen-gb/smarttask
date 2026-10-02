@@ -1,0 +1,16 @@
+{
+  // Extensions recommandées pour SmartTask.
+  // VS Code les proposera automatiquement à l'ouverture du projet.
+  // Voir docs/00-INSTALLATIONS.md § 7 pour le détail de chacune.
+  "recommendations": [
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-boot-dev-pack",
+    "Angular.ng-template",
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-azuretools.vscode-docker",
+    "humao.rest-client",
+    "EditorConfig.EditorConfig",
+    "redhat.vscode-yaml"
+  ]
+}

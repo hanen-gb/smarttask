@@ -359,14 +359,14 @@ de supposer, comme indiqué en § 11.
 
 - Dépôt local (`branch main`), **remote configuré** :
   `https://github.com/hanen-gb/smarttask.git` (publié via GitHub Desktop).
-- **3 commits** :
+- **4 commits** :
   ```
+  616c3b0 feat: etapes 5 et 6 (roles/permissions + CRUD Projets)
   81027cc feat: etapes 2 a 4 (backend Spring Boot + frontend Angular)
   44be99a fix(scripts): detection de la version Java dans check-env.ps1
   1b2bdc6 chore: etape 1 - architecture, documentation et environnement
   ```
-- ✅ Tout le travail des étapes 1 à 4 (jusqu'a la creation des DTO `user.dto` de
-  l'etape 5 inclue) est maintenant commité.
+- ✅ Tout le travail des étapes 1 à 6 est maintenant commité.
 - ⚠️ **Le commit local n'a PAS encore été poussé vers GitHub** — l'utilisatrice
   doit ouvrir **GitHub Desktop** et cliquer **"Push origin"** pour le publier.
   Vérifier à chaque nouvelle session si c'est fait (`git log` local vs ce qui
@@ -380,20 +380,25 @@ de supposer, comme indiqué en § 11.
 
 ---
 
-## 10. Prochaine étape : Étape 5 — Rôles et permissions
+## 10. Prochaine étape : Étape 7 — CRUD Tâches + kanban
 
 D'après [docs/04-ROADMAP.md](docs/04-ROADMAP.md) :
 
-- **Backend** : `@EnableMethodSecurity` + `@PreAuthorize` sur les futurs
-  contrôleurs, autorisation **contextuelle** dans les services (ex: "est-il
-  membre de CE projet précis ?" — pas seulement un contrôle de rôle global),
-  endpoints d'administration des utilisateurs, profil modifiable.
-- **Frontend** : `roleGuard`, affichage conditionnel selon le rôle dans les
-  templates (`@if (user.role === 'ADMIN')`).
-- **Avant de s'y lancer**, envisager de régler en premier :
-  - Le commit Git en retard (§ 9)
-  - Éventuellement le `GlobalExceptionHandler` manquant (§ 6), pour avoir un
-    format d'erreur propre avant d'ajouter plus d'endpoints
+- **Backend** : migration `V3__create_tasks.sql`, entité `Task` avec **2
+  relations vers `User`** (`assignee` et `reporter` — nécessite de nommer les
+  colonnes explicitement, Hibernate ne peut pas deviner lesquelles), enum
+  `TaskStatus`/`TaskPriority`, règles R8-R12 (ex: on ne peut assigner qu'à un
+  membre du projet — autorisation contextuelle, même patron que
+  `requireMembership` de l'étape 6), endpoints `PATCH` partiels
+  (`/tasks/{id}/status`, `/tasks/{id}/assignee`).
+- **Frontend** : vue liste + vue kanban (glisser-déposer), formulaire de tâche.
+- **Avant de s'y lancer, envisager de régler en premier** (dette accumulée) :
+  - `GlobalExceptionHandler` manquant (§ 6) — d'autant plus important que la
+    réponse d'erreur actuelle **expose la stack trace Java** dans le JSON
+  - Pousser les commits vers GitHub (§ 9)
+  - Les règles R9-R10 de `Task` vont réutiliser le même patron d'autorisation
+    contextuelle que `ProjectService.requireMembership()` — s'en inspirer
+    directement plutôt que réinventer
 
 ---
 

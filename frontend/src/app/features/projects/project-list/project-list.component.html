@@ -1,0 +1,45 @@
+<div class="header-row">
+  <div>
+    <h1>Mes projets</h1>
+    <p>Les projets dont vous êtes membre.</p>
+  </div>
+  <button class="btn btn--primary" type="button" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Annuler' : '+ Nouveau projet' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <form class="create-form" [formGroup]="form" (ngSubmit)="submit()">
+    <div class="field">
+      <label for="name">Nom du projet</label>
+      <input id="name" type="text" formControlName="name" placeholder="Ex: Refonte site vitrine" />
+      @if (form.controls.name.invalid && form.controls.name.touched) {
+        <div class="field-error">Au moins 3 caractères.</div>
+      }
+    </div>
+    <div class="field">
+      <label for="description">Description</label>
+      <input id="description" type="text" formControlName="description" />
+    </div>
+    <button type="submit" class="btn btn--accent">Créer</button>
+  </form>
+}
+
+@if (loading()) {
+  <p>Chargement...</p>
+} @else if (projects().length === 0) {
+  <p>Aucun projet pour l'instant — crée le premier !</p>
+} @else {
+  <div class="project-grid">
+    @for (project of projects(); track project.id) {
+      <a class="project-card" [routerLink]="['/projects', project.id]" [style.borderTopColor]="project.color || '#1D4ED8'">
+        <h3>{{ project.name }}</h3>
+        <p>{{ project.description || 'Pas de description' }}</p>
+        <div class="project-card__footer">
+          <span class="badge">{{ project.status }}</span>
+          <span>{{ project.memberCount }} membre(s)</span>
+        </div>
+      </a>
+    }
+  </div>
+}

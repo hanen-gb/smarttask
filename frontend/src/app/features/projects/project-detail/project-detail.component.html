@@ -1,0 +1,27 @@
+<a routerLink="/projects" class="back-link">← Retour aux projets</a>
+
+@if (errorMessage()) {
+  <div class="form-error">{{ errorMessage() }}</div>
+}
+
+@if (project(); as project) {
+  <div class="detail-card" [style.borderTopColor]="project.color || '#1D4ED8'">
+    <h1>{{ project.name }}</h1>
+    <p>{{ project.description || 'Pas de description' }}</p>
+
+    <dl>
+      <dt>Statut</dt>
+      <dd><span class="badge">{{ project.status }}</span></dd>
+
+      <dt>Propriétaire</dt>
+      <dd>{{ project.owner.firstName }} {{ project.owner.lastName }}</dd>
+
+      <dt>Membres</dt>
+      <dd>{{ project.memberCount }}</dd>
+    </dl>
+
+    <button class="btn" type="button" (click)="deleteProject()" style="background:var(--color-danger); color:#fff;">
+      Supprimer le projet
+    </button>
+  </div>
+}

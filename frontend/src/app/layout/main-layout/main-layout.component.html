@@ -12,6 +12,10 @@
     <aside class="layout__sidebar">
       <nav>
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+        <a routerLink="/projects" routerLinkActive="active">Projets</a>
+        @if (authService.currentUser()?.role === 'ADMIN') {
+          <a routerLink="/users" routerLinkActive="active">Utilisateurs</a>
+        }
       </nav>
     </aside>
 

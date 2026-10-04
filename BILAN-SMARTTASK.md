@@ -6,7 +6,7 @@
 > déjà rencontrés, et ce qui reste à faire. Ne redemande pas ces informations à
 > l'utilisateur, elles sont toutes ici.
 >
-> **Dernière mise à jour** : 2026-10-04 (fin de la session couvrant les étapes 1 à 4)
+> **Dernière mise à jour** : 2026-10-04 (session couvrant les étapes 1 à 6)
 
 ---
 
@@ -62,16 +62,16 @@ avec quelques divergences mineures listées en § 6 ci-dessous.
 
 ---
 
-## 3. Avancement — 4 étapes sur 14 terminées
+## 3. Avancement — 6 étapes sur 14 terminées
 
 ```
 ✅ Étape 1  — Architecture & environnement
 ✅ Étape 2  — Backend squelette (Spring Boot + PostgreSQL + Flyway + Swagger)
 ✅ Étape 3  — Frontend squelette (Angular + routing + layout)
 ✅ Étape 4  — Authentification JWT (backend ET frontend, testee de bout en bout)
-→  Étape 5  — Rôles & permissions                    ⬅ PROCHAINE ÉTAPE
-   Étape 6  — CRUD Projets
-   Étape 7  — CRUD Tâches + kanban
+✅ Étape 5  — Rôles & permissions (@PreAuthorize + page admin /users)
+✅ Étape 6  — CRUD Projets (Project + ProjectMember, membres, suppression)
+→  Étape 7  — CRUD Tâches + kanban                   ⬅ PROCHAINE ÉTAPE
    Étape 8  — Recherche, filtres, tri, pagination
    Étape 9  — Commentaires & notifications
    Étape 10 — Fichiers joints
@@ -136,6 +136,33 @@ auth/
 │   └── AuthResponse.java            -- record + record imbrique UserSummary
 ├── AuthService.java                 -- register(), login(), toUserSummary() (reutilisee par /me)
 └── AuthController.java              -- POST /register (201), POST /login, GET /me (protege)
+
+user/dto/                            -- (etape 5)
+├── UserResponse.java                -- record (id, email, nom, role, enabled)
+├── UpdateProfileRequest.java        -- record (firstName, lastName)
+└── UpdateRoleRequest.java           -- record (role)
+user/UserService.java                -- (etape 5) getAllUsers(), getUserById(), updateOwnProfile(),
+                                          updateRole(), updateStatus()
+user/UserController.java             -- (etape 5) GET /users (@PreAuthorize ADMIN), GET /users/{id},
+                                          PUT /users/me, PUT /users/{id}/role (ADMIN), PUT /users/{id}/status (ADMIN)
+
+project/                             -- (etape 6)
+├── ProjectStatus.java               -- enum PLANNING/ACTIVE/ON_HOLD/COMPLETED/ARCHIVED
+├── ProjectRole.java                 -- enum OWNER/MANAGER/CONTRIBUTOR/VIEWER
+├── Project.java                     -- @Entity, @ManyToOne(LAZY) vers owner (User)
+├── ProjectMember.java               -- @Entity, @ManyToOne vers Project ET User + projectRole
+├── ProjectRepository.java
+├── ProjectMemberRepository.java     -- findByProjectIdAndUserId, findByUserId, existsBy...
+├── dto/
+│   ├── ProjectRequest.java          -- record (name, description, color, startDate, endDate)
+│   ├── ProjectResponse.java         -- record + record imbrique OwnerSummary
+│   └── AddMemberRequest.java        -- record (userId)
+├── ProjectService.java              -- createProject() [R4: createur->OWNER membre auto],
+                                          getMyProjects(), getProjectById() [controle contextuel
+                                          requireMembership], deleteProject() [R6: owner/ADMIN
+                                          seulement], addMember() [requireOwnerOrManager]
+└── ProjectController.java           -- GET/POST /projects, GET/DELETE /projects/{id},
+                                          POST /projects/{id}/members
 ```
 
 **`User.java` implémente `UserDetails`** directement (pas de classe wrapper séparée) :
@@ -160,16 +187,21 @@ PUBLIC_ROUTES = {
   renvoie **`403`**, pas `401` (différent de ce que dit `docs/03-API-REST.md`,
   comportement par défaut de Spring Security sans entry point configuré — **ce
   n'est pas un bug**, mais une différence à connaître)
+- `.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()` — **ajouté étape 6**,
+  CRITIQUE. Sans cette ligne, TOUTE erreur métier (`ResponseStatusException`,
+  409/404/etc.) était écrasée par un `403` avant d'atteindre le client. Voir
+  piège § 7 n°15.
+- `@EnableMethodSecurity` — ajouté étape 5, active `@PreAuthorize`.
 
 ### 5.2 Migrations Flyway
 
 ```
 backend/src/main/resources/db/migration/
-└── V1__create_users.sql    -- table users (id UUID PK, email unique, password_hash,
-                                first_name, last_name, role, avatar_url, enabled,
-                                created_at, updated_at) + index sur email
+├── V1__create_users.sql                    -- table users
+└── V2__create_projects_and_members.sql     -- (etape 6) tables projects, project_members
+                                                (ON DELETE CASCADE sur project_members.project_id)
 ```
-Prochaine migration à créer : `V2__create_projects_and_members.sql` (étape 6).
+Prochaine migration à créer : `V3__create_tasks.sql` (étape 7).
 
 ### 5.3 Configuration (`application.yml` / `application-dev.yml`)
 
@@ -194,24 +226,34 @@ app.html              -- juste <router-outlet></router-outlet>
 
 core/
 ├── models/
-│   ├── user.model.ts        -- Role, UserSummary
-│   └── auth.model.ts        -- RegisterRequest, LoginRequest, AuthResponse (miroir backend)
+│   ├── user.model.ts        -- Role, UserSummary, UserResponse (etape 5)
+│   ├── auth.model.ts        -- RegisterRequest, LoginRequest, AuthResponse (miroir backend)
+│   └── project.model.ts     -- (etape 6) Project, ProjectStatus, ProjectRequest
 ├── services/
 │   ├── token.service.ts     -- localStorage (cle "smarttask_access_token")
-│   └── auth.service.ts      -- signal currentUser, login(), register(), logout(),
-│                               fetchCurrentUser() appele au demarrage si token present
+│   ├── auth.service.ts      -- signal currentUser, login(), register(), logout(),
+│   │                           fetchCurrentUser() appele au demarrage si token present
+│   ├── user.service.ts      -- (etape 5) getAll(), updateRole(), updateStatus()
+│   └── project.service.ts   -- (etape 6) getMyProjects(), create(), getById(), delete()
 ├── interceptors/
 │   └── jwt.interceptor.ts   -- intercepteur fonctionnel, ajoute "Authorization: Bearer ..."
 └── guards/
-    └── auth.guard.ts        -- guard fonctionnel, verifie la presence du token
+    ├── auth.guard.ts        -- guard fonctionnel, verifie la presence du token
+    └── role.guard.ts        -- (etape 5) guard PARAMETRABLE : roleGuard(['ADMIN'])
 
-layout/main-layout/    -- navbar bleue + sidebar + nom utilisateur + bouton deconnexion
+layout/main-layout/    -- navbar bleue + sidebar (Dashboard/Projets/Utilisateurs-si-ADMIN)
+                           + nom utilisateur + bouton deconnexion
 
 features/
 ├── auth/
 │   ├── login/        -- formulaire reactif, design bleu/jaune (ecran split)
 │   └── register/     -- idem
-└── dashboard/         -- page placeholder (construite a l'etape 11)
+├── dashboard/         -- page placeholder (construite a l'etape 11)
+├── users/
+│   └── user-list/     -- (etape 5) page admin /users, tableau + toggle actif/desactive
+└── projects/           -- (etape 6)
+    ├── project-list/   -- liste "mes projets" + formulaire inline de creation
+    └── project-detail/ -- detail d'un projet + bouton suppression (teste R6)
 
 environments/
 ├── environment.ts       -- apiUrl: http://localhost:8080/api
@@ -222,7 +264,10 @@ environments/
 ```
 /login, /register           -- PUBLIQUES, en dehors du layout (ecran plein, pas de navbar)
 /  (= MainLayoutComponent)  -- protege par authGuard
-  └── /dashboard            -- lazy-loaded
+  ├── /dashboard            -- lazy-loaded
+  ├── /users                -- lazy-loaded, PROTEGE EN PLUS par roleGuard(['ADMIN'])
+  ├── /projects              -- lazy-loaded
+  ├── /projects/:id          -- lazy-loaded
   └── '' → redirectTo dashboard
 ```
 
@@ -250,7 +295,7 @@ des emails variables — pas de liste garantie, mais celui ci-dessus est fiable.
 | Angular `22.x` | Angular **21.2.0** | `ng new` a tiré la dernière version dispo au moment de l'install. Mettre à jour la doc si on la relit un jour. |
 | Routes protégées → `401` | → **`403`** | Pas de `httpBasic()`/`formLogin()` configuré (choix voulu, JWT pur). Comportement par défaut de Spring Security. |
 | `AuthResponse.refreshToken` rempli | Toujours **`null`** | Le refresh token n'est pas encore implémenté (pas de `/api/auth/refresh`). À faire si besoin, pas bloquant pour la suite. |
-| `GlobalExceptionHandler` (étape 2) | **Pas encore créé** | Les erreurs utilisent le format par défaut de Spring Boot / `ResponseStatusException`, pas encore le format unifié décrit dans `docs/03-API-REST.md` § 1. À faire tôt dans l'étape 5 ou 6 idéalement, avant que le nombre d'endpoints explose. |
+| `GlobalExceptionHandler` (étape 2) | **Pas encore créé** | Les erreurs utilisent le format par défaut de Spring Boot / `ResponseStatusException`, pas encore le format unifié décrit dans `docs/03-API-REST.md` § 1. **De plus, la réponse d'erreur actuelle inclut la stack trace Java complète dans le JSON** (champ `"trace"`) — acceptable en dev, **à corriger avant l'étape 13** (fuite d'information en production). Priorité montée : à faire tôt étape 7. |
 
 ---
 
@@ -272,6 +317,8 @@ des emails variables — pas de liste garantie, mais celui ci-dessus est fiable.
 | 12 | `Ctrl+C` dans un terminal Windows pour "copier" du texte | **Ça tue le processus en cours**, ça ne copie rien ! Toujours sélectionner à la souris (copie automatique) pour copier dans un terminal Windows |
 | 13 | `JAVA_HOME` nouvellement défini pas pris en compte dans le terminal IntelliJ/VS Code | Il faut fermer et **rouvrir tout l'IDE** (pas juste un nouvel onglet terminal) — l'IDE transmet son propre environnement figé au démarrage |
 | 14 | `docker compose stop` qui plante (`tried to kill container, but did not receive an exit event`) | Récurrent, lié à l'instabilité Docker Desktop/WSL2 sur cette machine. Réessayer une fois suffit généralement ; sinon fermer Docker Desktop directement règle le problème |
+| 15 | ⚠️ **IMPORTANT** — Toute `ResponseStatusException` (409, 404...) renvoyait **`403`** au lieu du vrai code, avec un corps vide | Spring Boot redirige en interne (`forward`) vers `/error` pour construire la reponse. Cette route n'etait **pas** dans `PUBLIC_ROUTES`, donc Spring Security la bloquait et ecrasait le vrai code. **Fix** : `.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()` dans `authorizeHttpRequests`. Touchait TOUTE l'appli depuis l'étape 4 (même le `409` "email déjà utilisé"), pas juste les projets. Diagnostiqué en comparant le vrai statut *résolu* dans les logs serveur (`ResponseStatusExceptionResolver : Resolved [...]`) avec le statut *réellement reçu* côté client — les deux divergeaient, preuve que le problème était entre les deux, pas dans le code métier |
+| 16 | PowerShell `Invoke-RestMethod`/`Invoke-WebRequest` (Windows PowerShell 5.1) peut afficher un `StatusCode` qui ne correspond pas toujours exactement à ce que montre `curl -w "%{http_code}"` sur une même reponse | Face a un code HTTP surprenant, **toujours croiser avec `curl`** et/ou les logs serveur avant de conclure a un bug applicatif — ne jamais faire confiance a un seul outil de diagnostic |
 
 ---
 
@@ -300,29 +347,36 @@ cd frontend
 npm start
 ```
 
-### État au moment de la rédaction de ce fichier
-Docker Desktop et IntelliJ ont été **fermés proprement** à la fin de la session
-précédente. Tout est à relancer au prochain démarrage de travail.
+### État au moment de la rédaction de ce fichier (mise à jour étape 6)
+Docker + backend (`.\mvnw spring-boot:run`, port 8080) tournaient activement
+pendant la rédaction, mais seront probablement fermés à la fin de la session —
+vérifier avec `docker info` / `curl localhost:8080/actuator/health` plutôt que
+de supposer, comme indiqué en § 11.
 
 ---
 
-## 9. État Git — ⚠️ ACTION REQUISE
+## 9. État Git
 
-- Dépôt local initialisé (`branch main`), **remote configuré** :
-  `https://github.com/hanen-gb/smarttask.git` (donc déjà publié sur GitHub à un
-  moment, via GitHub Desktop).
-- **Seulement 2 commits existent**, tous les deux de l'étape 1 uniquement :
+- Dépôt local (`branch main`), **remote configuré** :
+  `https://github.com/hanen-gb/smarttask.git` (publié via GitHub Desktop).
+- **3 commits** :
   ```
+  81027cc feat: etapes 2 a 4 (backend Spring Boot + frontend Angular)
   44be99a fix(scripts): detection de la version Java dans check-env.ps1
   1b2bdc6 chore: etape 1 - architecture, documentation et environnement
   ```
-- ⚠️ **Tout le travail des étapes 2, 3 et 4 (tout le backend Spring Boot, tout le
-  frontend Angular) n'a JAMAIS été commité.** `git status` montre des dizaines de
-  fichiers non suivis/modifiés.
-- **Prochaine action recommandée** : proposer à l'utilisatrice de committer (puis
-  pousser via GitHub Desktop) tout l'état actuel avant de continuer, pour ne rien
-  risquer de perdre. Suggestion de message de commit :
-  `feat: etapes 2 a 4 - backend Spring Boot (JPA, Flyway, Security, JWT) + frontend Angular (routing, layout, auth)`
+- ✅ Tout le travail des étapes 1 à 4 (jusqu'a la creation des DTO `user.dto` de
+  l'etape 5 inclue) est maintenant commité.
+- ⚠️ **Le commit local n'a PAS encore été poussé vers GitHub** — l'utilisatrice
+  doit ouvrir **GitHub Desktop** et cliquer **"Push origin"** pour le publier.
+  Vérifier à chaque nouvelle session si c'est fait (`git log` local vs ce qui
+  est visible sur github.com/hanen-gb/smarttask).
+- ⚠️ `.claude/` (racine du projet) a été ajouté à `.gitignore` — c'est un
+  dossier technique interne à l'outil Claude Code, pas du code du projet.
+  `frontend/.claude/CLAUDE.md` (bonnes pratiques Angular, générées par
+  `ng new`) reste suivi, lui, car c'est un vrai fichier de référence utile.
+- **Rappel pour la suite** : committer à la fin de chaque étape terminée (pas
+  seulement tous les 3-4 étapes comme cette fois) pour limiter le risque.
 
 ---
 

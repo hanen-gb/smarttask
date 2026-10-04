@@ -1,5 +1,6 @@
 package com.smarttask.backend.common.config;
 
+import jakarta.servlet.DispatcherType;
 import com.smarttask.backend.security.CustomUserDetailsService;
 import com.smarttask.backend.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -50,6 +51,10 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
+                // Autorise les "forward" internes vers /error (declenches par
+                // ResponseStatusException) -- sinon Spring Security les bloque
+                // avec un 403 qui ecrase le vrai code d'erreur (404, 409...).
+                .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
                 .requestMatchers(PUBLIC_ROUTES).permitAll()
                 .anyRequest().authenticated()
             )

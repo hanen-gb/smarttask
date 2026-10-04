@@ -1,0 +1,39 @@
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+
+  th,
+  td {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.9rem;
+  }
+
+  th {
+    background: var(--color-bg);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+}
+
+.badge {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status {
+  color: var(--color-text-muted);
+
+  &--active {
+    color: var(--color-success);
+  }
+}

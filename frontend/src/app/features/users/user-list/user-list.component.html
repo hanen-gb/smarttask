@@ -1,0 +1,37 @@
+<h1>Utilisateurs</h1>
+<p>Gestion des comptes — réservé aux administrateurs.</p>
+
+@if (loading()) {
+  <p>Chargement...</p>
+} @else {
+  <table class="user-table">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Email</th>
+        <th>Rôle</th>
+        <th>Statut</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (user of users(); track user.id) {
+        <tr>
+          <td>{{ user.firstName }} {{ user.lastName }}</td>
+          <td>{{ user.email }}</td>
+          <td><span class="badge">{{ user.role }}</span></td>
+          <td>
+            <span class="status" [class.status--active]="user.enabled">
+              {{ user.enabled ? 'Actif' : 'Désactivé' }}
+            </span>
+          </td>
+          <td>
+            <button class="btn btn--accent" type="button" (click)="toggleStatus(user)">
+              {{ user.enabled ? 'Désactiver' : 'Réactiver' }}
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}

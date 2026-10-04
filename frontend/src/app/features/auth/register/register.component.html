@@ -1,0 +1,84 @@
+<div class="auth">
+  <div class="auth__panel">
+    <div class="auth__brand">
+      <span class="auth__brand-dot"></span>
+      SmartTask
+    </div>
+    <h2 class="auth__tagline">Rejoignez votre équipe.</h2>
+    <p class="auth__tagline-sub">
+      Créez votre compte pour commencer à suivre projets et tâches dès aujourd'hui.
+    </p>
+  </div>
+
+  <div class="auth__form-side">
+    <form class="auth__card" [formGroup]="form" (ngSubmit)="submit()">
+      <h1>Créer un compte</h1>
+      <p class="auth__subtitle">Quelques informations pour commencer</p>
+
+      @if (errorMessage()) {
+        <div class="form-error">{{ errorMessage() }}</div>
+      }
+
+      <div class="auth__row">
+        <div class="field">
+          <label for="firstName">Prénom</label>
+          <input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            [class.invalid]="form.controls.firstName.invalid && form.controls.firstName.touched"
+          />
+        </div>
+
+        <div class="field">
+          <label for="lastName">Nom</label>
+          <input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            [class.invalid]="form.controls.lastName.invalid && form.controls.lastName.touched"
+          />
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          [class.invalid]="form.controls.email.invalid && form.controls.email.touched"
+          placeholder="vous@entreprise.com"
+        />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <div class="field-error">Email valide requis.</div>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          [class.invalid]="form.controls.password.invalid && form.controls.password.touched"
+          placeholder="••••••••"
+        />
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <div class="field-error">
+            Au moins 8 caractères, avec une majuscule, une minuscule et un chiffre.
+          </div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block" [disabled]="loading()">
+        {{ loading() ? 'Création...' : 'Créer mon compte' }}
+      </button>
+
+      <p class="auth__switch">
+        Déjà un compte ?
+        <a routerLink="/login">Se connecter</a>
+      </p>
+    </form>
+  </div>
+</div>

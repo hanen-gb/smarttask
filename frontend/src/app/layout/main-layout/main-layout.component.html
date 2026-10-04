@@ -1,0 +1,22 @@
+<div class="layout">
+  <header class="layout__navbar">
+    <span class="layout__logo">SmartTask</span>
+    <span class="layout__spacer"></span>
+    @if (authService.currentUser(); as user) {
+      <span class="layout__user">{{ user.firstName }} {{ user.lastName }}</span>
+    }
+    <button class="layout__logout" type="button" (click)="logout()">Déconnexion</button>
+  </header>
+
+  <div class="layout__body">
+    <aside class="layout__sidebar">
+      <nav>
+        <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      </nav>
+    </aside>
+
+    <main class="layout__content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,37 @@
+# Profil "dev" : utilise quand on developpe en local.
+# Pointe vers le PostgreSQL lance par docker-compose.yml (port 5433 -- voir docs/00-INSTALLATIONS.md).
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/smarttask
+    username: smarttask
+    password: smarttask
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # "validate" et non "update" : Hibernate VERIFIE que les entites Java
+      # correspondent au schema cree par Flyway, il ne modifie jamais le schema
+      # lui-meme. Voir docs/02-MODELE-DONNEES.md section 6 pour le detail.
+      ddl-auto: validate
+    show-sql: true          # affiche les requetes SQL generees dans la console -- utile pour apprendre
+    properties:
+      hibernate:
+        format_sql: true    # indente le SQL affiche, plus lisible
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+# Configuration JWT -- voir docs/00-INSTALLATIONS.md (.env.example) pour la version production.
+# En dev, valeur par defaut fournie directement ici (jamais de secret reel en dur en production).
+jwt:
+  secret: dev-secret-key-never-use-this-in-production-min-32-chars
+  access-token-expiration-ms: 900000      # 15 minutes
+  refresh-token-expiration-ms: 604800000  # 7 jours
+
+# Logs plus bavards en developpement, pour voir ce qui se passe
+logging:
+  level:
+    com.smarttask: DEBUG
+    org.hibernate.SQL: DEBUG

@@ -1,0 +1,60 @@
+<div class="auth">
+  <div class="auth__panel">
+    <div class="auth__brand">
+      <span class="auth__brand-dot"></span>
+      SmartTask
+    </div>
+    <h2 class="auth__tagline">Pilotez vos projets, simplement.</h2>
+    <p class="auth__tagline-sub">
+      Authentification, gestion de projets et de tâches pour votre équipe — en un seul endroit.
+    </p>
+  </div>
+
+  <div class="auth__form-side">
+    <form class="auth__card" [formGroup]="form" (ngSubmit)="submit()">
+      <h1>Connexion</h1>
+      <p class="auth__subtitle">Accédez à votre espace SmartTask</p>
+
+      @if (errorMessage()) {
+        <div class="form-error">{{ errorMessage() }}</div>
+      }
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          [class.invalid]="form.controls.email.invalid && form.controls.email.touched"
+          placeholder="vous@entreprise.com"
+        />
+        @if (form.controls.email.invalid && form.controls.email.touched) {
+          <div class="field-error">Email valide requis.</div>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Mot de passe</label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          [class.invalid]="form.controls.password.invalid && form.controls.password.touched"
+          placeholder="••••••••"
+        />
+        @if (form.controls.password.invalid && form.controls.password.touched) {
+          <div class="field-error">Mot de passe requis.</div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn--primary btn--block" [disabled]="loading()">
+        {{ loading() ? 'Connexion...' : 'Se connecter' }}
+      </button>
+
+      <p class="auth__switch">
+        Pas encore de compte ?
+        <a routerLink="/register">Créer un compte</a>
+      </p>
+    </form>
+  </div>
+</div>

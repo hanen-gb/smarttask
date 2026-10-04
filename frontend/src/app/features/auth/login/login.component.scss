@@ -1,0 +1,107 @@
+.auth {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+
+  @media (max-width: 860px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 4rem 3.5rem;
+    background: linear-gradient(145deg, var(--color-primary-dark), var(--color-primary));
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      opacity: 0.15;
+      right: -160px;
+      bottom: -160px;
+    }
+
+    @media (max-width: 860px) {
+      display: none;
+    }
+  }
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    margin-bottom: 3rem;
+  }
+
+  &__brand-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 3px;
+    background: var(--color-accent);
+    margin-right: 0.6rem;
+  }
+
+  &__tagline {
+    font-size: 2rem;
+    max-width: 420px;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+
+  &__tagline-sub {
+    max-width: 380px;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.95rem;
+  }
+
+  &__form-side {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: var(--color-bg);
+  }
+
+  &__card {
+    width: 100%;
+    max-width: 380px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    padding: 2.5rem;
+
+    h1 {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__subtitle {
+    margin-bottom: 1.75rem;
+    font-size: 0.9rem;
+  }
+
+  &__switch {
+    text-align: center;
+    margin: 1.5rem 0 0;
+    font-size: 0.875rem;
+
+    a {
+      font-weight: 600;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}

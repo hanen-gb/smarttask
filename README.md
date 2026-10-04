@@ -5,6 +5,10 @@ pour apprendre **Angular** (frontend) et **Spring Boot** (backend).
 
 > Projet pédagogique : chaque étape est documentée dans [`docs/`](docs/) avant d'être codée.
 
+> 📍 **[BILAN-SMARTTASK.md](BILAN-SMARTTASK.md)** — document de référence à jour :
+> avancement précis, inventaire du code, pièges déjà résolus, prochaine étape.
+> À lire en premier pour reprendre le projet (humain ou nouvelle session IA).
+
 ---
 
 ## 1. En deux phrases
@@ -19,7 +23,7 @@ l'avancement sur un **dashboard**. L'accès est protégé par une
 
 | Couche | Technologie | Version visée |
 |---|---|---|
-| Frontend | Angular (standalone components + signals) | 22.x |
+| Frontend | Angular (standalone components + signals) | 21.x |
 | Backend | Spring Boot (Web, Data JPA, Security, Validation) | 4.1.1 |
 | Langage backend | Java | 17 |
 | Base de données | PostgreSQL | 16 |
@@ -87,8 +91,9 @@ smarttask/
 
 - [x] **Étape 1** — Architecture, environnement et documentation
 - [ ] **Étape 2** — Backend : squelette Spring Boot + connexion PostgreSQL
-- [ ] **Étape 3** — Frontend : squelette Angular + routing + layout
-- [ ] Étapes 4 à 14 → voir [`docs/04-ROADMAP.md`](docs/04-ROADMAP.md)
+- [x] **Étape 3** — Frontend : squelette Angular + routing + layout
+- [x] **Étape 4** — Authentification JWT (backend + frontend)
+- [ ] Étapes 5 à 14 → voir [`docs/04-ROADMAP.md`](docs/04-ROADMAP.md)
 
 ---
 

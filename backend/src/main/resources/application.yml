@@ -1,0 +1,21 @@
+# Configuration commune a tous les environnements.
+# Les valeurs specifiques (base de donnees, etc.) sont dans application-{profil}.yml
+
+spring:
+  application:
+    name: backend
+  profiles:
+    active: dev        # profil utilise par defaut quand on lance sans preciser --spring.profiles.active
+
+server:
+  port: 8080
+
+# Actuator : endpoints de sante/metriques (deja ajoute au pom.xml a l'etape 1)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: when-authorized

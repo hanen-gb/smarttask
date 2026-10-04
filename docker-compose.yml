@@ -46,7 +46,7 @@ services:
     container_name: smarttask-pgadmin
     restart: unless-stopped
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@smarttask.local
+      PGADMIN_DEFAULT_EMAIL: admin@smarttask.io
       PGADMIN_DEFAULT_PASSWORD: admin
       PGADMIN_CONFIG_SERVER_MODE: "False"          # pas de login multi-utilisateur
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"

@@ -1,2 +1,61 @@
 <h1>Dashboard</h1>
-<p>Bienvenue sur SmartTask. Cette page sera construite a l'etape 11.</p>
+<p>Vue d'ensemble de vos projets et tâches.</p>
+
+@if (loading()) {
+  <p>Chargement...</p>
+} @else if (summary(); as s) {
+  <div class="stat-grid">
+    <div class="stat-card">
+      <span class="stat-card__value">{{ s.totalProjects }}</span>
+      <span class="stat-card__label">Projets</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ s.activeProjects }}</span>
+      <span class="stat-card__label">Projets actifs</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ s.myOpenTasks }}</span>
+      <span class="stat-card__label">Mes tâches ouvertes</span>
+    </div>
+    <div class="stat-card" [class.stat-card--danger]="s.myOverdueTasks > 0">
+      <span class="stat-card__value">{{ s.myOverdueTasks }}</span>
+      <span class="stat-card__label">En retard</span>
+    </div>
+    <div class="stat-card stat-card--accent">
+      <span class="stat-card__value">{{ s.tasksCompletedThisWeek }}</span>
+      <span class="stat-card__label">Terminées cette semaine</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ (s.completionRate * 100).toFixed(0) }}%</span>
+      <span class="stat-card__label">Taux de complétion</span>
+    </div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-panel">
+      <h3>Tâches par statut</h3>
+      @for (bar of statusBars(); track bar.label) {
+        <div class="bar-row">
+          <span class="bar-row__label">{{ bar.label }}</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill" [style.width.%]="bar.percent"></div>
+          </div>
+          <span class="bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </div>
+
+    <div class="chart-panel">
+      <h3>Tâches par priorité</h3>
+      @for (bar of priorityBars(); track bar.label) {
+        <div class="bar-row">
+          <span class="bar-row__label">{{ bar.label }}</span>
+          <div class="bar-row__track">
+            <div class="bar-row__fill bar-row__fill--accent" [style.width.%]="bar.percent"></div>
+          </div>
+          <span class="bar-row__count">{{ bar.count }}</span>
+        </div>
+      }
+    </div>
+  </div>
+}

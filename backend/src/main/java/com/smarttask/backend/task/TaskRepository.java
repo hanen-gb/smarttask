@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface TaskRepository extends JpaRepository<Task, UUID>, JpaSpecificationExecutor<Task> {
 
     List<Task> findByProjectIdOrderByPositionAsc(UUID projectId);
+
+    List<Task> findByProjectIdIn(List<UUID> projectIds);
 }

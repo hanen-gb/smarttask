@@ -1,0 +1,44 @@
+<a [routerLink]="['/projects', projectId]" class="back-link">← Retour au projet</a>
+
+<div class="header-row">
+  <h1>Tableau des tâches</h1>
+  <button class="btn btn--primary" type="button" (click)="showForm.set(!showForm())">
+    {{ showForm() ? 'Annuler' : '+ Nouvelle tâche' }}
+  </button>
+</div>
+
+@if (showForm()) {
+  <form class="create-form" [formGroup]="form" (ngSubmit)="createTask()">
+    <div class="field">
+      <input type="text" formControlName="title" placeholder="Titre de la tâche" />
+    </div>
+    <button type="submit" class="btn btn--accent">Ajouter</button>
+  </form>
+}
+
+<div class="board">
+  @for (col of columns; track col) {
+    <div class="board__column">
+      <h3>{{ statusLabel[col] }} <span class="count">{{ board()[col].length }}</span></h3>
+
+      @for (task of board()[col]; track task.id) {
+        <div class="task-card task-card--{{ task.priority.toLowerCase() }}">
+          <p class="task-card__title">{{ task.title }}</p>
+          <div class="task-card__footer">
+            <span class="badge">{{ task.priority }}</span>
+            @if (task.assignee) {
+              <span>{{ task.assignee.firstName }}</span>
+            } @else {
+              <span class="unassigned">Non assignée</span>
+            }
+          </div>
+          @if (col !== 'DONE' && col !== 'CANCELLED') {
+            <button class="task-card__next" type="button" (click)="moveToNextStatus(task)">
+              Étape suivante →
+            </button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

@@ -46,6 +46,20 @@ export const routes: Routes = [
             (m) => m.ProjectDetailComponent,
           ),
       },
+      {
+        path: 'projects/:id/board',
+        loadComponent: () =>
+          import('./features/projects/project-board/project-board.component').then(
+            (m) => m.ProjectBoardComponent,
+          ),
+      },
+      {
+        path: 'tasks',
+        loadComponent: () =>
+          import('./features/tasks/task-list/task-list.component').then(
+            (m) => m.TaskListComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

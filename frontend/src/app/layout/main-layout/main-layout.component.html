@@ -13,6 +13,7 @@
       <nav>
         <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
         <a routerLink="/projects" routerLinkActive="active">Projets</a>
+        <a routerLink="/tasks" routerLinkActive="active">Mes tâches</a>
         @if (authService.currentUser()?.role === 'ADMIN') {
           <a routerLink="/users" routerLinkActive="active">Utilisateurs</a>
         }

@@ -1,0 +1,61 @@
+<h1>Mes tâches</h1>
+<p>Recherche et filtres synchronisés avec l'URL — essaie de recharger la page (F5).</p>
+
+<div class="filters">
+  <input
+    type="text"
+    [formControl]="searchControl"
+    placeholder="Rechercher un titre..."
+    class="filters__search"
+  />
+
+  <div class="filters__statuses">
+    @for (status of allStatuses; track status) {
+      <button
+        type="button"
+        class="chip"
+        [class.chip--active]="activeStatuses().includes(status)"
+        (click)="toggleStatus(status)"
+      >
+        {{ status }}
+      </button>
+    }
+  </div>
+</div>
+
+@if (loading()) {
+  <p>Chargement...</p>
+} @else if (result(); as page) {
+  @if (page.content.length === 0) {
+    <p>Aucune tâche ne correspond à ces critères.</p>
+  } @else {
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>Titre</th>
+          <th>Projet</th>
+          <th>Statut</th>
+          <th>Priorité</th>
+          <th>Assigné</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (task of page.content; track task.id) {
+          <tr>
+            <td>{{ task.title }}</td>
+            <td>{{ task.projectName }}</td>
+            <td><span class="badge">{{ task.status }}</span></td>
+            <td>{{ task.priority }}</td>
+            <td>{{ task.assignee ? task.assignee.firstName : '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <button class="btn" [disabled]="page.first" (click)="goToPage(page.page - 1)">← Précédent</button>
+      <span>Page {{ page.page + 1 }} / {{ page.totalPages }} ({{ page.totalElements }} tâches)</span>
+      <button class="btn" [disabled]="page.last" (click)="goToPage(page.page + 1)">Suivant →</button>
+    </div>
+  }
+}

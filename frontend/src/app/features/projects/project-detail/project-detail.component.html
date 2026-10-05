@@ -20,7 +20,11 @@
       <dd>{{ project.memberCount }}</dd>
     </dl>
 
-    <button class="btn" type="button" (click)="deleteProject()" style="background:var(--color-danger); color:#fff;">
+    <a class="btn btn--primary" [routerLink]="['/projects', project.id, 'board']">
+      Voir le tableau des tâches
+    </a>
+
+    <button class="btn" type="button" (click)="deleteProject()" style="background:var(--color-danger); color:#fff; margin-left: 0.5rem;">
       Supprimer le projet
     </button>
   </div>

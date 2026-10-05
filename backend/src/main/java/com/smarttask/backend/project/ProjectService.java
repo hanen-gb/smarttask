@@ -1,7 +1,9 @@
 package com.smarttask.backend.project;
 
+import com.smarttask.backend.project.dto.ProjectMemberResponse;
 import com.smarttask.backend.project.dto.ProjectRequest;
 import com.smarttask.backend.project.dto.ProjectResponse;
+import com.smarttask.backend.project.dto.UpdateProjectRequest;
 import com.smarttask.backend.user.Role;
 import com.smarttask.backend.user.User;
 import com.smarttask.backend.user.UserRepository;
@@ -70,6 +72,51 @@ public class ProjectService {
         projectRepository.delete(project);
         // Les ProjectMember sont supprimes automatiquement par la base
         // (ON DELETE CASCADE dans la migration V2)
+    }
+
+    public ProjectResponse updateProject(UUID projectId, User currentUser, UpdateProjectRequest request) {
+        Project project = findProjectOrThrow(projectId);
+        requireOwnerOrManager(projectId, currentUser);
+
+        project.setName(request.name());
+        project.setDescription(request.description());
+        if (request.status() != null) {
+            project.setStatus(request.status());
+        }
+        project.setColor(request.color());
+        project.setStartDate(request.startDate());
+        project.setEndDate(request.endDate());
+
+        return toResponse(projectRepository.save(project));
+    }
+
+    public List<ProjectMemberResponse> getMembers(UUID projectId, User currentUser) {
+        findProjectOrThrow(projectId);
+        requireMembership(projectId, currentUser);
+
+        return projectMemberRepository.findByProjectId(projectId).stream()
+                .map(m -> new ProjectMemberResponse(
+                        m.getUser().getId().toString(),
+                        m.getUser().getFirstName(),
+                        m.getUser().getLastName(),
+                        m.getUser().getEmail(),
+                        m.getProjectRole()
+                ))
+                .toList();
+    }
+
+    public void removeMember(UUID projectId, UUID userId, User currentUser) {
+        Project project = findProjectOrThrow(projectId);
+        requireOwnerOrManager(projectId, currentUser);
+
+        if (project.getOwner().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Impossible de retirer le proprietaire du projet");
+        }
+
+        ProjectMember membership = projectMemberRepository.findByProjectIdAndUserId(projectId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cette personne n'est pas membre du projet"));
+
+        projectMemberRepository.delete(membership);
     }
 
     public void addMember(UUID projectId, UUID userId, User currentUser) {

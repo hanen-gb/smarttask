@@ -19,8 +19,11 @@ public class UserController {
 
     private final UserService userService;
 
+    // Pas de @PreAuthorize ici (juste "etre connecte", deja impose globalement) :
+    // n'importe quel membre doit pouvoir consulter l'annuaire pour choisir un
+    // assigne ou un nouveau membre de projet. Seules les actions de GESTION
+    // (changer un role, activer/desactiver) restent reservees a l'ADMIN.
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }

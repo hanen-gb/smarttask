@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationService } from '../../core/services/notification.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { AppNotification } from '../../core/models/notification.model';
 
 @Component({
@@ -14,6 +15,7 @@ import { AppNotification } from '../../core/models/notification.model';
 export class MainLayoutComponent {
   readonly authService = inject(AuthService);
   readonly notificationService = inject(NotificationService);
+  readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
 
   readonly showPanel = signal(false);

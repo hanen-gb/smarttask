@@ -4,6 +4,7 @@ import com.smarttask.backend.common.dto.PageResponse;
 import com.smarttask.backend.task.dto.TaskRequest;
 import com.smarttask.backend.task.dto.TaskResponse;
 import com.smarttask.backend.task.dto.UpdateTaskAssigneeRequest;
+import com.smarttask.backend.task.dto.UpdateTaskRequest;
 import com.smarttask.backend.task.dto.UpdateTaskStatusRequest;
 import com.smarttask.backend.user.User;
 import jakarta.validation.Valid;
@@ -44,6 +45,20 @@ public class TaskController {
             Pageable pageable
     ) {
         return taskService.searchTasks(currentUser, projectId, assigneeId, unassigned, status, priority, search, dueBefore, pageable);
+    }
+
+    @GetMapping("/api/tasks/{id}")
+    public TaskResponse getTaskById(@PathVariable UUID id, @AuthenticationPrincipal User currentUser) {
+        return taskService.getTaskById(id, currentUser);
+    }
+
+    @PutMapping("/api/tasks/{id}")
+    public TaskResponse updateTask(
+            @PathVariable UUID id,
+            @Valid @RequestBody UpdateTaskRequest request,
+            @AuthenticationPrincipal User currentUser
+    ) {
+        return taskService.updateTask(id, currentUser, request);
     }
 
     @GetMapping("/api/projects/{projectId}/tasks")

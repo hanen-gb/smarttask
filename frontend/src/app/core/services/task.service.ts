@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { PageResponse, Task, TaskRequest, TaskStatus } from '../models/task.model';
+import { PageResponse, Task, TaskRequest, TaskStatus, UpdateTaskRequest } from '../models/task.model';
 
 export interface TaskSearchFilters {
   search?: string;
@@ -25,8 +25,20 @@ export class TaskService {
     return this.http.post<Task>(`${environment.apiUrl}/tasks`, request);
   }
 
+  getById(taskId: string) {
+    return this.http.get<Task>(`${environment.apiUrl}/tasks/${taskId}`);
+  }
+
+  update(taskId: string, request: UpdateTaskRequest) {
+    return this.http.put<Task>(`${environment.apiUrl}/tasks/${taskId}`, request);
+  }
+
   updateStatus(taskId: string, status: TaskStatus) {
     return this.http.patch<Task>(`${environment.apiUrl}/tasks/${taskId}/status`, { status });
+  }
+
+  updateAssignee(taskId: string, assigneeId: string | null) {
+    return this.http.patch<Task>(`${environment.apiUrl}/tasks/${taskId}/assignee`, { assigneeId });
   }
 
   delete(taskId: string) {

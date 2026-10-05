@@ -5,27 +5,86 @@
 }
 
 @if (project(); as project) {
-  <div class="detail-card" [style.borderTopColor]="project.color || '#1D4ED8'">
-    <h1>{{ project.name }}</h1>
-    <p>{{ project.description || 'Pas de description' }}</p>
+  <div class="layout-cols">
+    <section class="panel">
+      <h1>Modifier le projet</h1>
 
-    <dl>
-      <dt>Statut</dt>
-      <dd><span class="badge">{{ project.status }}</span></dd>
+      <form [formGroup]="editForm" (ngSubmit)="saveProject()">
+        <div class="field">
+          <label for="name">Nom</label>
+          <input id="name" type="text" formControlName="name" />
+        </div>
 
-      <dt>Propriétaire</dt>
-      <dd>{{ project.owner.firstName }} {{ project.owner.lastName }}</dd>
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" formControlName="description" rows="3"></textarea>
+        </div>
 
-      <dt>Membres</dt>
-      <dd>{{ project.memberCount }}</dd>
-    </dl>
+        <div class="field">
+          <label for="status">Statut</label>
+          <select id="status" formControlName="status">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s }}</option>
+            }
+          </select>
+        </div>
 
-    <a class="btn btn--primary" [routerLink]="['/projects', project.id, 'board']">
-      Voir le tableau des tâches
-    </a>
+        <div class="field-row">
+          <div class="field">
+            <label for="startDate">Début</label>
+            <input id="startDate" type="date" formControlName="startDate" />
+          </div>
+          <div class="field">
+            <label for="endDate">Fin</label>
+            <input id="endDate" type="date" formControlName="endDate" />
+          </div>
+        </div>
 
-    <button class="btn" type="button" (click)="deleteProject()" style="background:var(--color-danger); color:#fff; margin-left: 0.5rem;">
-      Supprimer le projet
-    </button>
+        <button type="submit" class="btn btn--primary" [disabled]="editForm.invalid">
+          {{ saved() ? '✓ Enregistré' : 'Enregistrer' }}
+        </button>
+      </form>
+
+      <a class="btn btn--primary" [routerLink]="['/projects', project.id, 'board']" style="margin-top:0.75rem; display:inline-block;">
+        Voir le tableau des tâches
+      </a>
+      <button class="btn" type="button" (click)="deleteProject()" style="background:var(--color-danger); color:#fff; margin-top:0.75rem; margin-left:0.5rem;">
+        Supprimer le projet
+      </button>
+    </section>
+
+    <section class="panel">
+      <h2>Membres ({{ members().length }})</h2>
+
+      @if (memberError()) {
+        <div class="form-error">{{ memberError() }}</div>
+      }
+
+      <ul class="member-list">
+        @for (member of members(); track member.userId) {
+          <li class="member">
+            <div>
+              <strong>{{ member.firstName }} {{ member.lastName }}</strong>
+              <span class="member__role">{{ member.projectRole }}</span>
+            </div>
+            @if (member.projectRole !== 'OWNER') {
+              <button class="member__remove" type="button" (click)="removeMember(member)" title="Retirer">✕</button>
+            }
+          </li>
+        }
+      </ul>
+
+      <div class="add-member">
+        <select [value]="selectedUserId()" (change)="selectedUserId.set($any($event.target).value)">
+          <option value="">— Choisir une personne —</option>
+          @for (user of availableUsers(); track user.id) {
+            <option [value]="user.id">{{ user.firstName }} {{ user.lastName }} ({{ user.email }})</option>
+          }
+        </select>
+        <button class="btn btn--accent" type="button" (click)="addMember()" [disabled]="!selectedUserId()">
+          + Ajouter
+        </button>
+      </div>
+    </section>
   </div>
 }

@@ -30,6 +30,17 @@
   font-weight: 600;
 }
 
+.role-select {
+  padding: 0.3rem 0.5rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-primary);
+  background: var(--color-primary-50);
+}
+
 .status {
   color: var(--color-text-muted);
 

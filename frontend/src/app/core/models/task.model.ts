@@ -33,6 +33,16 @@ export interface TaskRequest {
   dueDate?: string;
 }
 
+/** Miroir de com.smarttask.backend.task.dto.UpdateTaskRequest (backend) */
+export interface UpdateTaskRequest {
+  title: string;
+  description?: string;
+  priority?: TaskPriority;
+  dueDate?: string;
+}
+
+export const TASK_PRIORITIES: TaskPriority[] = ['LOW', 'MEDIUM', 'HIGH', 'URGENT'];
+
 /** Miroir de com.smarttask.backend.common.dto.PageResponse (backend) -- generique */
 export interface PageResponse<T> {
   content: T[];

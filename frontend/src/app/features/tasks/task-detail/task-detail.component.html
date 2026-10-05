@@ -1,52 +1,133 @@
 <a routerLink="/tasks" class="back-link">← Retour aux tâches</a>
 
-<h1>Détail de la tâche</h1>
+@if (errorMessage()) {
+  <div class="form-error">{{ errorMessage() }}</div>
+}
 
-<section class="panel">
-  <h2>Commentaires</h2>
+@if (task(); as t) {
+  <div class="layout-cols">
+    <!-- Colonne principale : infos + edition de la tache -->
+    <section class="panel panel--main">
+      <div class="panel__header">
+        <h1>Tâche</h1>
+        <span class="badge">{{ t.projectName }}</span>
+      </div>
 
-  @if (comments().length === 0) {
-    <p class="empty">Aucun commentaire pour l'instant.</p>
-  } @else {
-    <ul class="comment-list">
-      @for (comment of comments(); track comment.id) {
-        <li class="comment">
-          <div class="comment__author">{{ comment.author.firstName }} {{ comment.author.lastName }}</div>
-          <p class="comment__content">{{ comment.content }}</p>
-        </li>
-      }
-    </ul>
-  }
+      <form [formGroup]="editForm" (ngSubmit)="saveTaskInfo()">
+        <div class="field">
+          <label for="title">Titre</label>
+          <input id="title" type="text" formControlName="title" />
+        </div>
 
-  <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
-    <input type="text" formControlName="content" placeholder="Ajouter un commentaire..." />
-    <button type="submit" class="btn btn--primary" [disabled]="commentForm.invalid">Envoyer</button>
-  </form>
-</section>
+        <div class="field">
+          <label for="description">Description</label>
+          <textarea id="description" formControlName="description" rows="4"></textarea>
+        </div>
 
-<section class="panel">
-  <h2>Fichiers joints</h2>
+        <div class="field-row">
+          <div class="field">
+            <label for="priority">Priorité</label>
+            <select id="priority" formControlName="priority">
+              @for (p of priorities; track p) {
+                <option [value]="p">{{ p }}</option>
+              }
+            </select>
+          </div>
 
-  @if (uploadError()) {
-    <div class="form-error">{{ uploadError() }}</div>
-  }
+          <div class="field">
+            <label for="dueDate">Échéance</label>
+            <input id="dueDate" type="date" formControlName="dueDate" />
+          </div>
+        </div>
 
-  @if (attachments().length === 0) {
-    <p class="empty">Aucun fichier joint.</p>
-  } @else {
-    <ul class="attachment-list">
-      @for (file of attachments(); track file.id) {
-        <li class="attachment">
-          <span class="attachment__name">{{ file.originalFilename }}</span>
-          <span class="attachment__meta">{{ formatSize(file.sizeBytes) }} · {{ file.uploadedByName }}</span>
-          <button class="btn" type="button" (click)="downloadAttachment(file)">Télécharger</button>
-        </li>
-      }
-    </ul>
-  }
+        <button type="submit" class="btn btn--primary" [disabled]="editForm.invalid">
+          {{ saved() ? '✓ Enregistré' : 'Enregistrer' }}
+        </button>
+      </form>
 
-  <label class="upload-btn">
-    + Ajouter un fichier (10 Mo max)
-    <input type="file" (change)="onFileSelected($event)" hidden />
-  </label>
-</section>
+      <button class="btn" type="button" (click)="deleteTask()" style="background:var(--color-danger); color:#fff; margin-top:0.75rem;">
+        Supprimer la tâche
+      </button>
+    </section>
+
+    <!-- Colonne laterale : statut + assignation -->
+    <section class="panel panel--side">
+      <div class="field">
+        <label for="status">Statut</label>
+        <select id="status" [value]="t.status" (change)="changeStatus($any($event.target).value)">
+          @for (s of statuses; track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="assignee">Assigné à</label>
+        <select id="assignee" [value]="t.assignee?.id ?? ''" (change)="changeAssignee($any($event.target).value)">
+          <option value="">— Non assignée —</option>
+          @for (member of members(); track member.userId) {
+            <option [value]="member.userId">{{ member.firstName }} {{ member.lastName }}</option>
+          }
+        </select>
+      </div>
+
+      <dl class="meta">
+        <dt>Rapporteur</dt>
+        <dd>{{ t.reporter.firstName }} {{ t.reporter.lastName }}</dd>
+        @if (t.completedAt) {
+          <dt>Terminée le</dt>
+          <dd>{{ t.completedAt | date: 'dd/MM/yyyy' }}</dd>
+        }
+      </dl>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Commentaires</h2>
+
+    @if (comments().length === 0) {
+      <p class="empty">Aucun commentaire pour l'instant.</p>
+    } @else {
+      <ul class="comment-list">
+        @for (comment of comments(); track comment.id) {
+          <li class="comment">
+            <div class="comment__author">{{ comment.author.firstName }} {{ comment.author.lastName }}</div>
+            <p class="comment__content">{{ comment.content }}</p>
+          </li>
+        }
+      </ul>
+    }
+
+    <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+      <input type="text" formControlName="content" placeholder="Ajouter un commentaire..." />
+      <button type="submit" class="btn btn--primary" [disabled]="commentForm.invalid">Envoyer</button>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Fichiers joints</h2>
+
+    @if (uploadError()) {
+      <div class="form-error">{{ uploadError() }}</div>
+    }
+
+    @if (attachments().length === 0) {
+      <p class="empty">Aucun fichier joint.</p>
+    } @else {
+      <ul class="attachment-list">
+        @for (file of attachments(); track file.id) {
+          <li class="attachment">
+            <span class="attachment__name">{{ file.originalFilename }}</span>
+            <span class="attachment__meta">{{ formatSize(file.sizeBytes) }} · {{ file.uploadedByName }}</span>
+            <button class="btn" type="button" (click)="downloadAttachment(file)">Télécharger</button>
+          </li>
+        }
+      </ul>
+    }
+
+    <label class="upload-btn">
+      + Ajouter un fichier (10 Mo max)
+      <input type="file" (change)="onFileSelected($event)" hidden />
+    </label>
+  </section>
+}

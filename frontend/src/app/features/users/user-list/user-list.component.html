@@ -19,7 +19,17 @@
         <tr>
           <td>{{ user.firstName }} {{ user.lastName }}</td>
           <td>{{ user.email }}</td>
-          <td><span class="badge">{{ user.role }}</span></td>
+          <td>
+            <select
+              class="role-select"
+              [value]="user.role"
+              (change)="changeRole(user, $any($event.target).value)"
+            >
+              @for (role of roles; track role) {
+                <option [value]="role">{{ role }}</option>
+              }
+            </select>
+          </td>
           <td>
             <span class="status" [class.status--active]="user.enabled">
               {{ user.enabled ? 'Actif' : 'Désactivé' }}

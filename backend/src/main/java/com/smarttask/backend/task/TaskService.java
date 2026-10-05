@@ -8,6 +8,7 @@ import com.smarttask.backend.project.ProjectRepository;
 import com.smarttask.backend.project.ProjectRole;
 import com.smarttask.backend.task.dto.TaskRequest;
 import com.smarttask.backend.task.dto.TaskResponse;
+import com.smarttask.backend.task.dto.UpdateTaskRequest;
 import com.smarttask.backend.user.Role;
 import com.smarttask.backend.user.User;
 import com.smarttask.backend.user.UserRepository;
@@ -62,6 +63,26 @@ public class TaskService {
         }
 
         return toResponse(saved);
+    }
+
+    public TaskResponse getTaskById(UUID taskId, User currentUser) {
+        Task task = findTaskOrThrow(taskId);
+        requireMembership(task.getProject().getId(), currentUser);
+        return toResponse(task);
+    }
+
+    public TaskResponse updateTask(UUID taskId, User currentUser, UpdateTaskRequest request) {
+        Task task = findTaskOrThrow(taskId);
+        requireCanModify(task, currentUser);
+
+        task.setTitle(request.title());
+        task.setDescription(request.description());
+        if (request.priority() != null) {
+            task.setPriority(request.priority());
+        }
+        task.setDueDate(request.dueDate());
+
+        return toResponse(taskRepository.save(task));
     }
 
     public List<TaskResponse> getProjectTasks(UUID projectId, User currentUser) {
@@ -134,7 +155,10 @@ public class TaskService {
 
     public TaskResponse updateAssignee(UUID taskId, UUID newAssigneeId, User currentUser) {
         Task task = findTaskOrThrow(taskId);
-        requireCanModify(task, currentUser);
+        // Regle plus stricte que requireCanModify() : un simple MEMBER (meme
+        // rapporteur de la tache) ne peut PAS assigner une tache a quelqu'un
+        // d'autre -- seuls OWNER/MANAGER du projet ou un ADMIN le peuvent.
+        requireOwnerOrManagerOfProject(task.getProject().getId(), currentUser);
 
         task.setAssignee(newAssigneeId != null
                 ? resolveAssignee(task.getProject().getId(), newAssigneeId)
@@ -180,6 +204,19 @@ public class TaskService {
 
         if (!isProjectManager) {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Vous ne pouvez pas modifier cette tache");
+        }
+    }
+
+    private void requireOwnerOrManagerOfProject(UUID projectId, User currentUser) {
+        if (currentUser.getRole() == Role.ADMIN) return;
+
+        boolean allowed = projectMemberRepository.findByProjectIdAndUserId(projectId, currentUser.getId())
+                .map(m -> m.getProjectRole() == ProjectRole.OWNER || m.getProjectRole() == ProjectRole.MANAGER)
+                .orElse(false);
+
+        if (!allowed) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                    "Seul le proprietaire/manager du projet peut assigner cette tache");
         }
     }
 

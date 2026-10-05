@@ -32,6 +32,10 @@
       }
     </div>
 
+    <button class="theme-toggle" type="button" (click)="themeService.toggle()" title="Changer de thème">
+      {{ themeService.theme() === 'light' ? '🌙' : '☀️' }}
+    </button>
+
     @if (authService.currentUser(); as user) {
       <span class="layout__user">{{ user.firstName }} {{ user.lastName }}</span>
     }

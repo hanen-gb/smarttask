@@ -1,6 +1,8 @@
 import { Component, inject, signal } from '@angular/core';
 import { UserService } from '../../../core/services/user.service';
-import { UserResponse } from '../../../core/models/user.model';
+import { Role, UserResponse } from '../../../core/models/user.model';
+
+const ROLES: Role[] = ['ADMIN', 'MANAGER', 'MEMBER'];
 
 @Component({
   selector: 'app-user-list',
@@ -14,6 +16,7 @@ export class UserListComponent {
 
   readonly users = signal<UserResponse[]>([]);
   readonly loading = signal(true);
+  readonly roles = ROLES;
 
   constructor() {
     this.userService.getAll().subscribe((users) => {
@@ -24,6 +27,12 @@ export class UserListComponent {
 
   toggleStatus(user: UserResponse): void {
     this.userService.updateStatus(user.id, !user.enabled).subscribe((updated) => {
+      this.users.update((list) => list.map((u) => (u.id === updated.id ? updated : u)));
+    });
+  }
+
+  changeRole(user: UserResponse, role: Role): void {
+    this.userService.updateRole(user.id, role).subscribe((updated) => {
       this.users.update((list) => list.map((u) => (u.id === updated.id ? updated : u)));
     });
   }

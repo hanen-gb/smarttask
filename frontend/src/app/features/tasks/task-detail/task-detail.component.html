@@ -1,0 +1,52 @@
+<a routerLink="/tasks" class="back-link">← Retour aux tâches</a>
+
+<h1>Détail de la tâche</h1>
+
+<section class="panel">
+  <h2>Commentaires</h2>
+
+  @if (comments().length === 0) {
+    <p class="empty">Aucun commentaire pour l'instant.</p>
+  } @else {
+    <ul class="comment-list">
+      @for (comment of comments(); track comment.id) {
+        <li class="comment">
+          <div class="comment__author">{{ comment.author.firstName }} {{ comment.author.lastName }}</div>
+          <p class="comment__content">{{ comment.content }}</p>
+        </li>
+      }
+    </ul>
+  }
+
+  <form [formGroup]="commentForm" (ngSubmit)="submitComment()" class="comment-form">
+    <input type="text" formControlName="content" placeholder="Ajouter un commentaire..." />
+    <button type="submit" class="btn btn--primary" [disabled]="commentForm.invalid">Envoyer</button>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Fichiers joints</h2>
+
+  @if (uploadError()) {
+    <div class="form-error">{{ uploadError() }}</div>
+  }
+
+  @if (attachments().length === 0) {
+    <p class="empty">Aucun fichier joint.</p>
+  } @else {
+    <ul class="attachment-list">
+      @for (file of attachments(); track file.id) {
+        <li class="attachment">
+          <span class="attachment__name">{{ file.originalFilename }}</span>
+          <span class="attachment__meta">{{ formatSize(file.sizeBytes) }} · {{ file.uploadedByName }}</span>
+          <button class="btn" type="button" (click)="downloadAttachment(file)">Télécharger</button>
+        </li>
+      }
+    </ul>
+  }
+
+  <label class="upload-btn">
+    + Ajouter un fichier (10 Mo max)
+    <input type="file" (change)="onFileSelected($event)" hidden />
+  </label>
+</section>

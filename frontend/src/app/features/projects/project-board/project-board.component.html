@@ -23,7 +23,7 @@
 
       @for (task of board()[col]; track task.id) {
         <div class="task-card task-card--{{ task.priority.toLowerCase() }}">
-          <p class="task-card__title">{{ task.title }}</p>
+          <a [routerLink]="['/tasks', task.id]" class="task-card__title">{{ task.title }}</a>
           <div class="task-card__footer">
             <span class="badge">{{ task.priority }}</span>
             @if (task.assignee) {

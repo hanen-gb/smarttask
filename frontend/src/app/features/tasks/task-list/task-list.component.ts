@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { TaskService } from '../../../core/services/task.service';
 import { PageResponse, Task, TaskStatus, TASK_STATUSES } from '../../../core/models/task.model';
@@ -8,7 +8,7 @@ import { PageResponse, Task, TaskStatus, TASK_STATUSES } from '../../../core/mod
 @Component({
   selector: 'app-task-list',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './task-list.component.html',
   styleUrl: './task-list.component.scss',
 })

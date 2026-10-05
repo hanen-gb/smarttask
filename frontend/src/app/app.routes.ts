@@ -60,6 +60,13 @@ export const routes: Routes = [
             (m) => m.TaskListComponent,
           ),
       },
+      {
+        path: 'tasks/:id',
+        loadComponent: () =>
+          import('./features/tasks/task-detail/task-detail.component').then(
+            (m) => m.TaskDetailComponent,
+          ),
+      },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },

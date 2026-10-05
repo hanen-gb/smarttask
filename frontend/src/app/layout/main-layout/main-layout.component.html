@@ -2,6 +2,36 @@
   <header class="layout__navbar">
     <span class="layout__logo">SmartTask</span>
     <span class="layout__spacer"></span>
+
+    <div class="bell-wrapper">
+      <button class="bell" type="button" (click)="togglePanel()">
+        🔔
+        @if (notificationService.unreadCount() > 0) {
+          <span class="bell__badge">{{ notificationService.unreadCount() }}</span>
+        }
+      </button>
+
+      @if (showPanel()) {
+        <div class="bell-panel">
+          @if (notifications().length === 0) {
+            <p class="bell-panel__empty">Aucune notification.</p>
+          } @else {
+            @for (n of notifications(); track n.id) {
+              <button
+                type="button"
+                class="bell-panel__item"
+                [class.bell-panel__item--unread]="!n.isRead"
+                (click)="openNotification(n)"
+              >
+                <strong>{{ n.title }}</strong>
+                <span>{{ n.message }}</span>
+              </button>
+            }
+          }
+        </div>
+      }
+    </div>
+
     @if (authService.currentUser(); as user) {
       <span class="layout__user">{{ user.firstName }} {{ user.lastName }}</span>
     }

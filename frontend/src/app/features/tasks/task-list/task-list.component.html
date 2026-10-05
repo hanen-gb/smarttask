@@ -41,7 +41,7 @@
       </thead>
       <tbody>
         @for (task of page.content; track task.id) {
-          <tr>
+          <tr [routerLink]="['/tasks', task.id]" class="clickable-row">
             <td>{{ task.title }}</td>
             <td>{{ task.projectName }}</td>
             <td><span class="badge">{{ task.status }}</span></td>

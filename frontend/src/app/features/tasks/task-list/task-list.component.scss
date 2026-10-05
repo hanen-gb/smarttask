@@ -50,6 +50,14 @@
   overflow: hidden;
   margin-bottom: 1rem;
 
+  tbody tr.clickable-row {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-bg);
+    }
+  }
+
   th, td {
     text-align: left;
     padding: 0.65rem 1rem;

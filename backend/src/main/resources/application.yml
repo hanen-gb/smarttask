@@ -6,9 +6,19 @@ spring:
     name: backend
   profiles:
     active: dev        # profil utilise par defaut quand on lance sans preciser --spring.profiles.active
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
 
 server:
   port: 8080
+
+# Dossier de stockage des fichiers joints (etape 10). ./uploads = relatif au
+# dossier d'execution du backend. En production, pointera vers un disque
+# persistant ou sera remplace par une implementation S3 (meme interface).
+file:
+  storage-location: ./uploads
 
 # Actuator : endpoints de sante/metriques (deja ajoute au pom.xml a l'etape 1)
 management:

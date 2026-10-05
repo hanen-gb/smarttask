@@ -1,6 +1,7 @@
 package com.smarttask.backend.task;
 
 import com.smarttask.backend.common.dto.PageResponse;
+import com.smarttask.backend.notification.event.TaskAssignedEvent;
 import com.smarttask.backend.project.Project;
 import com.smarttask.backend.project.ProjectMemberRepository;
 import com.smarttask.backend.project.ProjectRepository;
@@ -11,6 +12,7 @@ import com.smarttask.backend.user.Role;
 import com.smarttask.backend.user.User;
 import com.smarttask.backend.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -33,6 +35,7 @@ public class TaskService {
     private final ProjectRepository projectRepository;
     private final ProjectMemberRepository projectMemberRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public TaskResponse createTask(User currentUser, TaskRequest request) {
         Project project = projectRepository.findById(request.projectId())
@@ -52,7 +55,13 @@ public class TaskService {
             task.setAssignee(resolveAssignee(request.projectId(), request.assigneeId()));
         }
 
-        return toResponse(taskRepository.save(task));
+        Task saved = taskRepository.save(task);
+
+        if (saved.getAssignee() != null) {
+            eventPublisher.publishEvent(new TaskAssignedEvent(saved, currentUser));
+        }
+
+        return toResponse(saved);
     }
 
     public List<TaskResponse> getProjectTasks(UUID projectId, User currentUser) {
@@ -131,7 +140,13 @@ public class TaskService {
                 ? resolveAssignee(task.getProject().getId(), newAssigneeId)
                 : null);
 
-        return toResponse(taskRepository.save(task));
+        Task saved = taskRepository.save(task);
+
+        if (saved.getAssignee() != null) {
+            eventPublisher.publishEvent(new TaskAssignedEvent(saved, currentUser));
+        }
+
+        return toResponse(saved);
     }
 
     public void deleteTask(UUID taskId, User currentUser) {

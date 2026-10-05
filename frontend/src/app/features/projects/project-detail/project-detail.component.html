@@ -40,21 +40,25 @@
           </div>
         </div>
 
-        <button type="submit" class="btn btn--primary" [disabled]="editForm.invalid">
-          {{ saved() ? '✓ Enregistré' : 'Enregistrer' }}
-        </button>
+        <div class="actions">
+          <button type="submit" class="btn-sm btn-sm--primary" [disabled]="editForm.invalid">
+            {{ saved() ? '✓ Enregistré' : 'Enregistrer' }}
+          </button>
+          <a class="btn-sm btn-sm--ghost" [routerLink]="['/projects', project.id, 'board']">
+            Voir le tableau →
+          </a>
+        </div>
       </form>
 
-      <a class="btn btn--primary" [routerLink]="['/projects', project.id, 'board']" style="margin-top:0.75rem; display:inline-block;">
-        Voir le tableau des tâches
-      </a>
-      <button class="btn" type="button" (click)="deleteProject()" style="background:var(--color-danger); color:#fff; margin-top:0.75rem; margin-left:0.5rem;">
+      <button class="btn-sm btn-sm--danger-outline delete-btn" type="button" (click)="deleteProject()">
         Supprimer le projet
       </button>
     </section>
 
-    <section class="panel">
-      <h2>Membres ({{ members().length }})</h2>
+    <section class="panel panel--members">
+      <div class="panel__header">
+        <h2>Membres <span class="count-pill">{{ members().length }}</span></h2>
+      </div>
 
       @if (memberError()) {
         <div class="form-error">{{ memberError() }}</div>
@@ -63,9 +67,15 @@
       <ul class="member-list">
         @for (member of members(); track member.userId) {
           <li class="member">
-            <div>
-              <strong>{{ member.firstName }} {{ member.lastName }}</strong>
-              <span class="member__role">{{ member.projectRole }}</span>
+            <div class="member__avatar">
+              {{ initials(member.firstName, member.lastName) }}
+              <span class="member__status" [class.member__status--on]="member.enabled"></span>
+            </div>
+            <div class="member__info">
+              <span class="member__name">{{ member.firstName }} {{ member.lastName }}</span>
+              <span class="member__meta">
+                {{ member.projectRole }} · {{ member.enabled ? 'Actif' : 'Désactivé' }}
+              </span>
             </div>
             @if (member.projectRole !== 'OWNER') {
               <button class="member__remove" type="button" (click)="removeMember(member)" title="Retirer">✕</button>
@@ -74,17 +84,26 @@
         }
       </ul>
 
-      <div class="add-member">
-        <select [value]="selectedUserId()" (change)="selectedUserId.set($any($event.target).value)">
-          <option value="">— Choisir une personne —</option>
-          @for (user of availableUsers(); track user.id) {
-            <option [value]="user.id">{{ user.firstName }} {{ user.lastName }} ({{ user.email }})</option>
-          }
-        </select>
-        <button class="btn btn--accent" type="button" (click)="addMember()" [disabled]="!selectedUserId()">
-          + Ajouter
+      @if (showAddMember()) {
+        <div class="add-member">
+          <select [value]="selectedUserId()" (change)="selectedUserId.set($any($event.target).value)">
+            <option value="">— Choisir une personne —</option>
+            @for (user of availableUsers(); track user.id) {
+              <option [value]="user.id">{{ user.firstName }} {{ user.lastName }}</option>
+            }
+          </select>
+          <button class="btn-sm btn-sm--primary" type="button" (click)="addMember()" [disabled]="!selectedUserId()">
+            Ajouter
+          </button>
+          <button class="btn-sm btn-sm--ghost" type="button" (click)="showAddMember.set(false)">
+            Annuler
+          </button>
+        </div>
+      } @else {
+        <button class="add-fab" type="button" (click)="showAddMember.set(true)" title="Ajouter un membre">
+          +
         </button>
-      </div>
+      }
     </section>
   </div>
 }

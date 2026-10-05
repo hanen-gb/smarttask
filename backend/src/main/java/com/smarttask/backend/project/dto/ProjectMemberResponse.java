@@ -7,5 +7,6 @@ public record ProjectMemberResponse(
         String firstName,
         String lastName,
         String email,
-        ProjectRole projectRole
+        ProjectRole projectRole,
+        boolean enabled
 ) {}

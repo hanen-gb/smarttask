@@ -100,7 +100,8 @@ public class ProjectService {
                         m.getUser().getFirstName(),
                         m.getUser().getLastName(),
                         m.getUser().getEmail(),
-                        m.getProjectRole()
+                        m.getProjectRole(),
+                        m.getUser().isEnabled()
                 ))
                 .toList();
     }

@@ -48,4 +48,5 @@ export interface ProjectMember {
   lastName: string;
   email: string;
   projectRole: ProjectRole;
+  enabled: boolean;
 }

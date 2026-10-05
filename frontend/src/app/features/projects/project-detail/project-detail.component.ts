@@ -29,6 +29,7 @@ export class ProjectDetailComponent {
   readonly memberError = signal<string | null>(null);
   readonly saved = signal(false);
   readonly selectedUserId = signal('');
+  readonly showAddMember = signal(false);
 
   readonly statuses = PROJECT_STATUSES;
 
@@ -108,6 +109,7 @@ export class ProjectDetailComponent {
     this.projectService.addMember(this.projectId, userId).subscribe({
       next: () => {
         this.selectedUserId.set('');
+        this.showAddMember.set(false);
         this.loadMembers();
         this.loadProject(); // memberCount a change
       },
@@ -133,6 +135,10 @@ export class ProjectDetailComponent {
           err.status === 409 ? 'Impossible de retirer le propriétaire.' : 'Suppression refusée.',
         ),
     });
+  }
+
+  initials(firstName: string, lastName: string): string {
+    return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
   }
 
   deleteProject(): void {

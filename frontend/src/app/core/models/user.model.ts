@@ -16,4 +16,5 @@ export interface UserResponse {
   lastName: string;
   role: Role;
   enabled: boolean;
+  avatarUrl: string | null;
 }

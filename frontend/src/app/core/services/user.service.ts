@@ -11,6 +11,20 @@ export class UserService {
     return this.http.get<UserResponse[]>(`${environment.apiUrl}/users`);
   }
 
+  getById(id: string) {
+    return this.http.get<UserResponse>(`${environment.apiUrl}/users/${id}`);
+  }
+
+  updateProfile(firstName: string, lastName: string) {
+    return this.http.put<UserResponse>(`${environment.apiUrl}/users/me`, { firstName, lastName });
+  }
+
+  uploadAvatar(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<UserResponse>(`${environment.apiUrl}/users/me/avatar`, formData);
+  }
+
   updateRole(id: string, role: string) {
     return this.http.put<UserResponse>(`${environment.apiUrl}/users/${id}/role`, { role });
   }

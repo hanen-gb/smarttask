@@ -1,0 +1,90 @@
+.layout-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  max-width: 760px;
+
+  @media (max-width: 700px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+  grid-column: span 1;
+
+  &:first-child {
+    grid-column: 1 / -1;
+  }
+
+  h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.avatar-xl {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  &--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+}
+
+.upload-label {
+  cursor: pointer;
+}
+
+.badge {
+  background: var(--color-primary-50);
+  color: var(--color-primary);
+  padding: 0.2rem 0.6rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.theme-choice {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.theme-option {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--color-primary);
+  }
+
+  &--active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-50);
+    color: var(--color-primary);
+  }
+}

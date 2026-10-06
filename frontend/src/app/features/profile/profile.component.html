@@ -1,0 +1,85 @@
+<h1>Mon profil</h1>
+<p>Photo, informations personnelles et préférences d'affichage.</p>
+
+@if (errorMessage()) {
+  <div class="form-error">{{ errorMessage() }}</div>
+}
+
+@if (profile(); as profile) {
+  <div class="layout-cols">
+    <section class="panel">
+      <h2>Photo de profil</h2>
+
+      @if (uploadError()) {
+        <div class="form-error">{{ uploadError() }}</div>
+      }
+
+      <div class="avatar-row">
+        @if (avatarSrc(profile); as src) {
+          <img [src]="src" alt="Photo de profil" class="avatar-xl" />
+        } @else {
+          <span class="avatar-xl avatar-xl--placeholder">{{ initials(profile) }}</span>
+        }
+
+        <label class="btn-sm btn-sm--ghost upload-label">
+          Changer la photo
+          <input type="file" accept="image/*" (change)="onAvatarSelected($event)" hidden />
+        </label>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Informations</h2>
+
+      <form [formGroup]="form" (ngSubmit)="saveProfile()">
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">Prénom</label>
+            <input id="firstName" type="text" formControlName="firstName" />
+          </div>
+          <div class="field">
+            <label for="lastName">Nom</label>
+            <input id="lastName" type="text" formControlName="lastName" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Email</label>
+          <input type="text" [value]="profile.email" disabled />
+        </div>
+
+        <div class="field">
+          <label>Rôle</label>
+          <span class="badge">{{ profile.role }}</span>
+        </div>
+
+        <button type="submit" class="btn btn--primary" [disabled]="form.invalid">
+          {{ saved() ? '✓ Enregistré' : 'Enregistrer' }}
+        </button>
+      </form>
+    </section>
+
+    <section class="panel">
+      <h2>Préférences d'affichage</h2>
+
+      <div class="theme-choice">
+        <button
+          type="button"
+          class="theme-option"
+          [class.theme-option--active]="themeService.theme() === 'light'"
+          (click)="themeService.setTheme('light')"
+        >
+          ☀️ Clair
+        </button>
+        <button
+          type="button"
+          class="theme-option"
+          [class.theme-option--active]="themeService.theme() === 'dark'"
+          (click)="themeService.setTheme('dark')"
+        >
+          🌙 Sombre
+        </button>
+      </div>
+    </section>
+  </div>
+}

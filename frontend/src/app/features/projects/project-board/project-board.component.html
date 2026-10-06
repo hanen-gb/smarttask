@@ -12,6 +12,32 @@
     <div class="field">
       <input type="text" formControlName="title" placeholder="Titre de la tâche" />
     </div>
+
+    <div class="field-row">
+      <div class="field">
+        <select formControlName="priority">
+          @for (p of priorities; track p) {
+            <option [value]="p">{{ p }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="field">
+        @if (selectedAssignee(); as assignee) {
+          <span class="assignee-chip">
+            {{ assignee.firstName }} {{ assignee.lastName }}
+            <button type="button" (click)="selectedAssignee.set(null)" title="Retirer">✕</button>
+          </span>
+        } @else {
+          <app-person-picker
+            [people]="members()"
+            placeholder="Assigner à (optionnel)..."
+            (picked)="selectedAssignee.set($event)"
+          />
+        }
+      </div>
+    </div>
+
     <button type="submit" class="btn btn--accent">Ajouter</button>
   </form>
 }

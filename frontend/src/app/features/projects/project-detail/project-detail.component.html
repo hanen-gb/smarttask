@@ -86,15 +86,11 @@
 
       @if (showAddMember()) {
         <div class="add-member">
-          <select [value]="selectedUserId()" (change)="selectedUserId.set($any($event.target).value)">
-            <option value="">— Choisir une personne —</option>
-            @for (user of availableUsers(); track user.id) {
-              <option [value]="user.id">{{ user.firstName }} {{ user.lastName }}</option>
-            }
-          </select>
-          <button class="btn-sm btn-sm--primary" type="button" (click)="addMember()" [disabled]="!selectedUserId()">
-            Ajouter
-          </button>
+          <app-person-picker
+            [people]="availableUsers()"
+            placeholder="Tape un nom..."
+            (picked)="addMember($event)"
+          />
           <button class="btn-sm btn-sm--ghost" type="button" (click)="showAddMember.set(false)">
             Annuler
           </button>

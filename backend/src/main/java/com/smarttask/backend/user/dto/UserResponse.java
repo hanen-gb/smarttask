@@ -8,5 +8,6 @@ public record UserResponse(
     String firstName,
     String lastName,
     Role role,
-    boolean enabled
+    boolean enabled,
+    String avatarUrl
 ) {}

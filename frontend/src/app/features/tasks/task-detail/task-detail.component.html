@@ -45,7 +45,7 @@
         </button>
       </form>
 
-      <button class="btn" type="button" (click)="deleteTask()" style="background:var(--color-danger); color:#fff; margin-top:0.75rem;">
+      <button class="btn btn--danger" type="button" (click)="deleteTask()" style="margin-top:0.75rem;">
         Supprimer la tâche
       </button>
     </section>
@@ -62,13 +62,19 @@
       </div>
 
       <div class="field">
-        <label for="assignee">Assigné à</label>
-        <select id="assignee" [value]="t.assignee?.id ?? ''" (change)="changeAssignee($any($event.target).value)">
-          <option value="">— Non assignée —</option>
-          @for (member of members(); track member.userId) {
-            <option [value]="member.userId">{{ member.firstName }} {{ member.lastName }}</option>
-          }
-        </select>
+        <label>Assigné à</label>
+        @if (t.assignee; as assignee) {
+          <span class="assignee-chip">
+            {{ assignee.firstName }} {{ assignee.lastName }}
+            <button type="button" (click)="changeAssignee(null)" title="Retirer l'assignation">✕</button>
+          </span>
+        } @else {
+          <app-person-picker
+            [people]="memberPeople()"
+            placeholder="Assigner à..."
+            (picked)="changeAssignee($event.id)"
+          />
+        }
       </div>
 
       <dl class="meta">

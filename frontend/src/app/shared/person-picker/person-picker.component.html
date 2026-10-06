@@ -1,0 +1,38 @@
+<div class="person-picker">
+  <input
+    type="text"
+    class="person-picker__input"
+    [placeholder]="placeholder()"
+    [value]="query()"
+    (input)="onInput($any($event.target).value)"
+    (focus)="open.set(true)"
+    (blur)="onBlur()"
+  />
+
+  @if (open()) {
+    @if (results().length > 0) {
+      <ul class="person-picker__list">
+        @for (person of results(); track person.id) {
+          <li>
+            <button
+              type="button"
+              class="person-picker__option"
+              (mousedown)="$event.preventDefault()"
+              (click)="select(person)"
+            >
+              <span class="person-picker__avatar">{{ initials(person) }}</span>
+              <span class="person-picker__info">
+                <span class="person-picker__name">{{ person.firstName }} {{ person.lastName }}</span>
+                @if (person.email) {
+                  <span class="person-picker__email">{{ person.email }}</span>
+                }
+              </span>
+            </button>
+          </li>
+        }
+      </ul>
+    } @else {
+      <div class="person-picker__empty">Aucun résultat.</div>
+    }
+  }
+</div>

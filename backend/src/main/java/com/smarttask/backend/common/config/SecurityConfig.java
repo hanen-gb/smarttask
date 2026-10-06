@@ -41,7 +41,10 @@ public class SecurityConfig {
         "/swagger-ui.html",
         "/swagger-ui/**",
         "/v3/api-docs/**",
-        "/actuator/health"
+        "/actuator/health",
+        // Une photo de profil n'est pas sensible, et <img src="..."> ne peut
+        // pas envoyer d'en-tete Authorization -- cette route reste publique.
+        "/api/users/*/avatar"
     };
 
     @Bean

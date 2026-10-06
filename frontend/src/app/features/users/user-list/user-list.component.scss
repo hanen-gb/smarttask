@@ -30,6 +30,22 @@
   font-weight: 600;
 }
 
+.user-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  &__name {
+    font-weight: 600;
+  }
+}
+
+.role-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
 .role-select {
   padding: 0.3rem 0.5rem;
   border: 1.5px solid var(--color-border);
@@ -42,9 +58,25 @@
 }
 
 .status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   color: var(--color-text-muted);
+  font-size: 0.875rem;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+  }
 
   &--active {
     color: var(--color-success);
+
+    &::before {
+      background: var(--color-success);
+    }
   }
 }

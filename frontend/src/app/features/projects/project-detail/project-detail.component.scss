@@ -112,63 +112,6 @@
   margin-top: 1.25rem;
 }
 
-/* ---- Boutons compacts, style "professionnel" ---- */
-
-.btn-sm {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.35rem;
-  border: none;
-  border-radius: var(--radius-sm);
-  padding: 0.45rem 0.9rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  text-decoration: none;
-  transition: filter 0.15s ease, transform 0.05s ease;
-
-  &:active {
-    transform: translateY(1px);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &--primary {
-    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
-    color: #fff;
-
-    &:hover:not(:disabled) {
-      filter: brightness(1.08);
-    }
-  }
-
-  &--ghost {
-    background: var(--color-bg);
-    color: var(--color-text-muted);
-    border: 1px solid var(--color-border);
-
-    &:hover {
-      color: var(--color-primary);
-      border-color: var(--color-primary);
-    }
-  }
-
-  &--danger-outline {
-    background: transparent;
-    color: var(--color-danger);
-    border: 1px solid var(--color-danger);
-
-    &:hover {
-      background: var(--color-danger-bg);
-    }
-  }
-}
-
 /* ---- Liste des membres, style "Teams" ---- */
 
 .member-list {
@@ -285,16 +228,5 @@
   gap: 0.4rem;
   margin-top: 0.75rem;
   flex-wrap: wrap;
-
-  select {
-    flex: 1;
-    min-width: 160px;
-    padding: 0.4rem 0.6rem;
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-sm);
-    font-family: inherit;
-    font-size: 0.8rem;
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
+  align-items: flex-start;
 }

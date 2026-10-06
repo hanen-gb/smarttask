@@ -21,7 +21,31 @@
       <label for="description">Description</label>
       <input id="description" type="text" formControlName="description" />
     </div>
-    <button type="submit" class="btn btn--accent">Créer</button>
+
+    <div class="field">
+      <label>Membres (en plus de toi, propriétaire automatique)</label>
+
+      @if (selectedMembers().length > 0) {
+        <div class="member-chips">
+          @for (person of selectedMembers(); track person.id) {
+            <span class="member-chip">
+              {{ initials(person) }} {{ person.firstName }} {{ person.lastName }}
+              <button type="button" (click)="removeMember(person)" title="Retirer">✕</button>
+            </span>
+          }
+        </div>
+      }
+
+      <app-person-picker
+        [people]="availableToPick()"
+        placeholder="Tape un nom pour ajouter un membre..."
+        (picked)="addMember($event)"
+      />
+    </div>
+
+    <button type="submit" class="btn btn--accent" [disabled]="creating()">
+      {{ creating() ? 'Création...' : 'Créer' }}
+    </button>
   </form>
 }
 

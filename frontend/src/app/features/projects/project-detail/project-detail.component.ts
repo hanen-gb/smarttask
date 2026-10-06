@@ -5,11 +5,12 @@ import { ProjectService } from '../../../core/services/project.service';
 import { UserService } from '../../../core/services/user.service';
 import { Project, ProjectMember, PROJECT_STATUSES, ProjectStatus } from '../../../core/models/project.model';
 import { UserResponse } from '../../../core/models/user.model';
+import { PersonPickerComponent, PickablePerson } from '../../../shared/person-picker/person-picker.component';
 
 @Component({
   selector: 'app-project-detail',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule],
+  imports: [RouterLink, ReactiveFormsModule, PersonPickerComponent],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })
@@ -28,7 +29,6 @@ export class ProjectDetailComponent {
   readonly errorMessage = signal<string | null>(null);
   readonly memberError = signal<string | null>(null);
   readonly saved = signal(false);
-  readonly selectedUserId = signal('');
   readonly showAddMember = signal(false);
 
   readonly statuses = PROJECT_STATUSES;
@@ -101,14 +101,10 @@ export class ProjectDetailComponent {
       });
   }
 
-  addMember(): void {
-    const userId = this.selectedUserId();
-    if (!userId) return;
-
+  addMember(person: PickablePerson): void {
     this.memberError.set(null);
-    this.projectService.addMember(this.projectId, userId).subscribe({
+    this.projectService.addMember(this.projectId, person.id).subscribe({
       next: () => {
-        this.selectedUserId.set('');
         this.showAddMember.set(false);
         this.loadMembers();
         this.loadProject(); // memberCount a change

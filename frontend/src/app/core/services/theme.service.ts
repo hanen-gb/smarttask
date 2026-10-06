@@ -13,7 +13,10 @@ export class ThemeService {
   }
 
   toggle(): void {
-    const next: Theme = this.theme() === 'light' ? 'dark' : 'light';
+    this.setTheme(this.theme() === 'light' ? 'dark' : 'light');
+  }
+
+  setTheme(next: Theme): void {
     this.theme.set(next);
     this.applyTheme(next);
     try {

@@ -85,7 +85,7 @@
   border-radius: 999px;
   width: 32px;
   height: 32px;
-  font-size: 1rem;
+  color: white;
   cursor: pointer;
   margin-right: 1rem;
   display: flex;
@@ -135,6 +135,12 @@
   &__user {
     font-size: 0.875rem;
     opacity: 0.9;
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__logout {

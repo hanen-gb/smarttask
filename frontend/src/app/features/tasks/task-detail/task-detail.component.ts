@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
@@ -10,11 +10,12 @@ import { Task, TASK_PRIORITIES, TASK_STATUSES, TaskPriority, TaskStatus } from '
 import { Comment } from '../../../core/models/comment.model';
 import { Attachment } from '../../../core/models/attachment.model';
 import { ProjectMember } from '../../../core/models/project.model';
+import { PersonPickerComponent, PickablePerson } from '../../../shared/person-picker/person-picker.component';
 
 @Component({
   selector: 'app-task-detail',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink, DatePipe],
+  imports: [ReactiveFormsModule, RouterLink, DatePipe, PersonPickerComponent],
   templateUrl: './task-detail.component.html',
   styleUrl: './task-detail.component.scss',
 })
@@ -36,6 +37,10 @@ export class TaskDetailComponent {
 
   readonly statuses = TASK_STATUSES;
   readonly priorities = TASK_PRIORITIES;
+
+  readonly memberPeople = computed<PickablePerson[]>(() =>
+    this.members().map((m) => ({ id: m.userId, firstName: m.firstName, lastName: m.lastName, email: m.email })),
+  );
 
   readonly errorMessage = signal<string | null>(null);
   readonly uploadError = signal<string | null>(null);
@@ -114,8 +119,8 @@ export class TaskDetailComponent {
     });
   }
 
-  changeAssignee(assigneeId: string): void {
-    this.taskService.updateAssignee(this.taskId, assigneeId || null).subscribe({
+  changeAssignee(assigneeId: string | null): void {
+    this.taskService.updateAssignee(this.taskId, assigneeId).subscribe({
       next: (task) => this.task.set(task),
       error: () =>
         this.errorMessage.set(

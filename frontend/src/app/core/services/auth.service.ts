@@ -28,6 +28,11 @@ export class AuthService {
     }
   }
 
+  /** A appeler apres une modification du profil (nom...) pour que la navbar se mette a jour. */
+  refreshCurrentUser(): void {
+    this.fetchCurrentUser();
+  }
+
   private fetchCurrentUser(): void {
     this.http.get<UserSummary>(`${environment.apiUrl}/auth/me`).subscribe({
       next: (user) => this.currentUserSignal.set(user),

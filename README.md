@@ -1,5 +1,12 @@
 # SmartTask — AI-Ready Task & Project Management Platform
 
+> **English:** Full-stack project & task management platform (Angular + Spring
+> Boot), built step by step as a learning project. Teams create projects, add
+> tasks (status, priority, due date), assign them to members, comment, attach
+> files, get notified, and track progress on a dashboard — all behind JWT
+> authentication with role-based permissions. See [`docs/`](docs/) (currently
+> in French) for the full architecture, data model and API contract.
+
 Application web full-stack de gestion de projets et de tâches, construite pas à pas
 pour apprendre **Angular** (frontend) et **Spring Boot** (backend).
 
